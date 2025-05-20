@@ -1,6 +1,6 @@
 class SpotifyAPI {
     constructor() {
-        this.clientId = 'YOUR_CLIENT_ID'; // Replace with your Spotify Client ID
+        this.clientId = '527bc50d121141e2b7b6e27336211312'; // Replace with your Spotify Client ID
         this.redirectUri = window.location.origin + window.location.pathname;
         this.accessToken = null;
         this.tokenExpirationTime = 0;
