@@ -1,0 +1,24 @@
+{
+  "name": "vivi31",
+  "version": "1.0.0",
+  "description": "vivi31 is a web application that generates personalized music recommendations based on a single song input. Using the Spotify Web API, it analyzes audio features and metadata to create a curated playlist of similar tracks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prajgaikwad/vivi31.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prajgaikwad/vivi31/issues"
+  },
+  "homepage": "https://github.com/prajgaikwad/vivi31#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "node-fetch": "^3.3.2"
+  }
+}
