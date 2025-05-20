@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vivi31 - Music Recommendations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>vivi31</h1>
+            <p class="tagline">Discover music similar to your favorite songs</p>
+        </header>
+
+        <div id="login-container" class="card">
+            <p>Connect with your Spotify account to get started</p>
+            <button id="login-button" class="btn"><i class="fab fa-spotify"></i> Connect with Spotify</button>
+        </div>
+
+        <div id="search-container" class="card hidden">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Enter a song name...">
+                <button id="search-button" class="btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="search-results" class="results-container"></div>
+        </div>
+
+        <div id="selected-track" class="card hidden">
+            <h2>Selected Track</h2>
+            <div class="track-info"></div>
+            <button id="get-recommendations" class="btn">Get Recommendations</button>
+        </div>
+
+        <div id="recommendations" class="card hidden">
+            <h2>Recommended Tracks</h2>
+            <div class="recommendations-container">
+                <div class="recommendations-list"></div>
+            </div>
+            <div class="action-buttons">
+                <button id="save-playlist" class="btn"><i class="fas fa-save"></i> Save as Playlist</button>
+                <button id="new-search" class="btn"><i class="fas fa-redo"></i> New Search</button>
+            </div>
+        </div>
+
+        <div id="playlist-saved" class="card hidden">
+            <h2>Playlist Saved!</h2>
+            <p>Your playlist has been saved to your Spotify account.</p>
+            <a id="open-playlist" class="btn" target="_blank">Open in Spotify</a>
+        </div>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>vivi31 | Made with <i class="fas fa-heart"></i> | Uses Spotify Web API</p>
+    </footer>
+
+    <script src="js/spotify.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
