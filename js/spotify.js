@@ -1,7 +1,7 @@
 class SpotifyAPI {
     constructor() {
-        this.clientId = '527bc50d121141e2b7b6e27336211312'; // Replace with your Spotify Client ID
-        this.redirectUri = window.location.origin + window.location.pathname;
+        this.clientId = '527bc50d121141e2b7b6e27336211312'; // Your Spotify Client ID
+        this.redirectUri = 'https://vivi315.netlify.app/';
         this.accessToken = null;
         this.tokenExpirationTime = 0;
         this.endpoints = {
@@ -28,7 +28,19 @@ class SpotifyAPI {
         const code = urlParams.get('code');
 
         if (code) {
-            this.fetchAccessToken(code);
+            // Add loading indicator here if possible
+            console.log("Auth code detected, processing...");
+            this.fetchAccessToken(code)
+                .then(success => {
+                    console.log("Token fetch completed, success:", success);
+                    if (success) {
+                        // Dispatch an event to notify the app that authentication is successful
+                        const event = new CustomEvent('spotify-authenticated');
+                        document.dispatchEvent(event);
+                    }
+                })
+                .catch(err => console.error("Token fetch error:", err));
+            
             // Clean up URL
             const cleanUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, document.title, cleanUrl);
@@ -54,6 +66,7 @@ class SpotifyAPI {
 
     async fetchAccessToken(code) {
         try {
+            console.log("Exchanging code for token...");
             // Using our serverless function for token exchange
             const response = await fetch('/.netlify/functions/auth', {
                 method: 'POST',
@@ -66,11 +79,16 @@ class SpotifyAPI {
                 })
             });
 
+            console.log("Token exchange response status:", response.status);
+            
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Token exchange failed:", errorText);
                 throw new Error('Failed to fetch access token');
             }
 
             const data = await response.json();
+            console.log("Token received successfully!");
             this.accessToken = data.access_token;
             this.tokenExpirationTime = Date.now() + (data.expires_in * 1000);
             

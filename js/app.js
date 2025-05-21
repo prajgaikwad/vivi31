@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize UI
     initUI();
+     document.addEventListener('spotify-authenticated', () => {
+        console.log("Authentication event received, updating UI");
+        showLoggedInUI();
+    });
     
     // Event Listeners
     loginButton.addEventListener('click', handleLogin);
