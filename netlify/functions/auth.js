@@ -1,67 +1,60 @@
-require('dotenv').config();
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
-exports.handler = async function(event, context) {
-  // Only allow POST requests
+export async function handler(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  try {
-    const params = JSON.parse(event.body);
-    
-    // Get required parameters
-    const code = params.code;
-    const redirectUri = params.redirectUri;
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
-    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-    
-    if (!code || !redirectUri) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing required parameters' })
-      };
-    }
-    
-    // Prepare the request to Spotify's token endpoint
-    const authOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: redirectUri
-      })
-    };
-    
-    // Make the request to Spotify
-    const response = await fetch('https://accounts.spotify.com/api/token', authOptions);
-    const data = await response.json();
-    
-    if (response.ok) {
-      // Return the token response to the client
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*' // For development, restrict this in production
-        },
-        body: JSON.stringify(data)
-      };
-    } else {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify(data)
-      };
-    }
-  } catch (error) {
-    console.error('Token exchange error:', error);
+  // Use environment variables for secrets — never expose in frontend or event.body
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal Server Error' })
+      body: JSON.stringify({ error: 'Client credentials not configured in environment' }),
     };
   }
-};
+
+  let code, redirectUri;
+  try {
+    ({ code, redirectUri } = JSON.parse(event.body));
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid request body' }),
+    };
+  }
+
+  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+  const params = new URLSearchParams();
+  params.append('grant_type', 'authorization_code');
+  params.append('code', code);
+  params.append('redirect_uri', redirectUri);
+
+  try {
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return { statusCode: 400, body: JSON.stringify(errorData) };
+    }
+
+    const data = await response.json();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
+  } catch (error) {
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+  }
+}
